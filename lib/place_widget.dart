@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class PlaceWidget extends StatelessWidget {
@@ -34,9 +35,9 @@ class PlaceWidget extends StatelessWidget {
     Widget buttonsSection = Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildButtonColumn("CALL", Icons.call, Colors.blue),
-        _buildButtonColumn("ROUTE", Icons.near_me, Colors.blue),
-        _buildButtonColumn("SHARE", Icons.share, Colors.blue),
+        _buildButtonColumn(context, "CALL", Icons.call, Colors.blue),
+        _buildButtonColumn(context, "ROUTE", Icons.near_me, Colors.blue),
+        _buildButtonColumn(context, "SHARE", Icons.share, Colors.blue),
       ],
     );
     Widget descriptionSection = Padding(
@@ -63,13 +64,15 @@ class PlaceWidget extends StatelessWidget {
           ) : Row(
             children: [
               imageSectionL,
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    titleSection,
-                    buttonsSection,
-                    descriptionSection,
-                  ],
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      titleSection,
+                      buttonsSection,
+                      descriptionSection,
+                    ],
+                  ),
                 ),
               )
             ],
@@ -80,17 +83,22 @@ class PlaceWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonColumn(String title, IconData icon, Color color){
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: color,),
-        Container(
-          padding: EdgeInsets.only(top:8),
-          child: Text(title, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w400),)
-        )
-      ],
+  Widget _buildButtonColumn(BuildContext context, String title, IconData icon, Color color){
+    return TextButton(
+      onPressed: (){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.blue, content: Row(children: [Icon(Icons.info, color: Colors.white,), Expanded(child: Text("Presionaste ${title}"),)],)));
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color,),
+          Container(
+            padding: EdgeInsets.only(top:8),
+            child: Text(title, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w400),)
+          )
+        ],
+      ),
     );
   }
 }
