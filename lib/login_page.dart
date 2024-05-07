@@ -10,46 +10,102 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  FirebaseAuth _auth = FirebaseAuth.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    print(_auth.currentUser);
-  }
+  final  FirebaseAuth _auth = FirebaseAuth.instance;
+  final  _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Iniciar Sesión"),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: Container(
-        child: Center(
-          child: Column(
-            children: [
-              Text(_auth.currentUser==null ? 'No hay usuario logeado' : 'Usuario logeado: ${_auth.currentUser?.email}'),
-              _auth.currentUser!=null ? ElevatedButton(
-                child: Text("Cerrar Sesión"),
-                onPressed: ()async{
-                  await _auth.signOut();
-                  setState(() {
+    Size size = MediaQuery.of(context).size;
 
-                  });
-                },
-              ) : Container()
-            ],
-          ),
-        ),
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        child: Stack(
+          children: [
+            Container(
+              width: size.width,
+              height: 300,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/img/place.jpeg'),
+                  fit: BoxFit.cover
+                )
+              ),
+            ),
+            Container(
+              width: size.width,
+              height: 300,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.blueGrey.withOpacity(0.30), Colors.black45]
+                )
+              ),
+              child: Center(
+                child: Text("TravelApp", style: TextStyle(fontFamily: 'Signatra', fontSize: 80, color: Colors.white),),
+              ),
+            ),
+            Positioned(
+              top: 220,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 32),
+                height: size.height,
+                width: size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(62),
+                    topRight: Radius.circular(62),
+                  )
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.email),
+                            labelText: "Usuario",
+                            labelStyle: TextStyle(color: Colors.purple),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.elliptical(20, 20)),
+                              gapPadding: 10
+                            ),
+                            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple), borderRadius: BorderRadius.all(Radius.elliptical(20,20)))
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+                        child: TextFormField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.email),
+                              labelText: "Contraseña",
+                              labelStyle: TextStyle(color: Colors.purple),
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.elliptical(20, 20)),
+                                  gapPadding: 10
+                              ),
+                              focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple), borderRadius: BorderRadius.all(Radius.elliptical(20,20)))
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            )
+          ],
+        )
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=>login(),
-        child: Icon(Icons.login, color: Colors.white,),
-        backgroundColor: Colors.red,
-      ),
+
     );
   }
 
