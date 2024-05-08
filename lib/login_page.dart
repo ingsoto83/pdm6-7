@@ -12,6 +12,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final  FirebaseAuth _auth = FirebaseAuth.instance;
   final  _formKey = GlobalKey<FormState>();
+  bool visible = false;
+  String user = "";
+  String pass = "";
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +68,11 @@ class _LoginPageState extends State<LoginPage> {
                   child: ListView(
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                         child: TextFormField(
-                          decoration: InputDecoration(
+                          validator: (value)=> value!.isEmpty ? "Escribe tu usuario" : null,
+                          onSaved: (value) => user = value??'',
+                          decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.email),
                             labelText: "Usuario",
                             labelStyle: TextStyle(color: Colors.purple),
@@ -81,11 +86,30 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                         child: TextFormField(
-                          obscureText: true,
+                          validator: (value){
+                            if(value!.isEmpty){
+                              return "Escribe tu contraseña...!";
+                            }else if(value.length < 6){
+                              return "Debe ser de almenos 6 caracteres";
+                            }else{
+                              return null;
+                            }
+                          },
+                          onSaved: (value)=> pass = value??'',
+                          obscureText: visible ? false : true,
                           decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.email),
+                              prefixIcon: Icon(Icons.password),
+                              suffixIcon: GestureDetector(
+                                onTap: (){
+                                  visible = !visible;
+                                  setState(() {
+
+                                  });
+                                },
+                                child: Icon(visible ? Icons.visibility_off : Icons.visibility)
+                              ),
                               labelText: "Contraseña",
                               labelStyle: TextStyle(color: Colors.purple),
                               isDense: true,
@@ -95,6 +119,36 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple), borderRadius: BorderRadius.all(Radius.elliptical(20,20)))
                           ),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+                        height: 100,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(80)),padding: EdgeInsets.all(0.0)),
+                          onPressed: (){
+                            if(_formKey.currentState!.validate()){
+                              _formKey.currentState!.save();
+                            }
+                          },
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors:[Colors.purple, Colors.blue]
+                              ),
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              constraints: BoxConstraints(minHeight: 80),
+                              child: Text("Iniciar Sesión",
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          )
                         ),
                       )
                     ],
