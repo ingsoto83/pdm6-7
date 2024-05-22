@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:pdm6/list_widget.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,8 +15,19 @@ class _LoginPageState extends State<LoginPage> {
   final  FirebaseAuth _auth = FirebaseAuth.instance;
   final  _formKey = GlobalKey<FormState>();
   bool visible = false;
+  bool loading = false;
   String user = "";
   String pass = "";
+
+  @override
+  void initState() {
+    super.initState();
+    if(_auth.currentUser!=null){
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder:(context)=>ListWidget()));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: (){
                             if(_formKey.currentState!.validate()){
                               _formKey.currentState!.save();
+                              login();
                             }
                           },
                           child: Ink(
@@ -143,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Container(
                               alignment: Alignment.center,
                               constraints: BoxConstraints(minHeight: 80),
-                              child: Text("Iniciar Sesión",
+                              child: loading ? Center(child: CircularProgressIndicator(backgroundColor: Colors.white,color: Colors.lightGreenAccent,),) : Text("Iniciar Sesión",
                               style: TextStyle(color: Colors.white, fontSize: 18),
                                 textAlign: TextAlign.center,
                               ),
@@ -164,12 +178,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   login() async{
+    setState(() {
+      loading =true;
+    });
     try{
-      UserCredential response = await _auth.signInWithEmailAndPassword(email: 'soto@its.mx', password: '123456');
-      print(response.user);
-      setState(() {
-
-      });
+      UserCredential response = await _auth.signInWithEmailAndPassword(email: user, password: pass);
     }catch(e){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.red,
@@ -184,6 +197,13 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ));
+    }finally{
+      setState(() {
+        loading=false;
+        if(_auth.currentUser!=null){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder:(context)=>ListWidget()));
+        }
+      });
     }
   }
 }
